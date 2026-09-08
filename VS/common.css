@@ -1,0 +1,237 @@
+/* ========== 公共样式：园区后台管理系统布局 ==========
+   作用：统一三个页面的侧边栏、头部、主内容区、按钮、弹窗、表单等基础样式
+   说明：纯原生 CSS，不依赖任何第三方 UI 库
+------------------------------------------------------
+   涉及的 CSS 基础知识：
+     1. 选择器：通配 * / 标签 / 类 . / 后代(空格) / 子代 > / 伪类 :hover / 属性 [disabled]
+     2. 盒模型：box-sizing:border-box 让 width 包含 padding+border，避免溢出
+     3. 布局：display:flex（一维）+ display:grid（二维）；align/justify 控制对齐
+     4. 定位：position:fixed + inset:0 实现全屏遮罩；z-index 控制堆叠层级
+     5. 过渡与动画：transition 过渡、@keyframes 关键帧动画
+     6. 媒体查询：@media 响应式（见各页 css）
+     7. CSS3：border-radius 圆角、box-shadow 阴影、rgba() 半透明、transform 变换
+====================================================== */
+
+/* ---------- 全局重置 ---------- */
+/* 通配选择器 *：匹配所有元素，统一清除默认外边距/内边距 */
+/* box-sizing:border-box：让 width 包含 padding+border，布局计算更直观 */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { height: 100%; }            /* height:100% 让 html/body 撑满视口 */
+body {
+  /* font-family 字体回退：前者不支持时自动用后者 */
+  font-family: "Microsoft YaHei", "PingFang SC", "Helvetica Neue", Arial, sans-serif;
+  font-size: 14px;
+  color: #303133;                        /* 十六进制颜色 #RRGGBB */
+  background: #f0f2f5;                   /* 浅灰底色，突出白色卡片 */
+  -webkit-font-smoothing: antialiased;   /* 字体抗锯齿，文字更平滑 */
+}
+/* a 标签默认有下划线+蓝色，这里重置为无装饰、继承父级颜色 */
+a { text-decoration: none; color: inherit; }
+ul, li { list-style: none; }             /* 去掉列表默认圆点 */
+/* inherit 继承父级字体，避免表单元素用浏览器默认字体 */
+input, select, button, textarea { font-family: inherit; font-size: inherit; outline: none; }
+
+/* ---------- 整体布局容器 ---------- */
+/* flex 布局：父级 display:flex，子级(.sidebar/.main)横向排列 */
+/* 视口单位 vh：100vh = 视口高度的 100%，让布局铺满一屏 */
+/* overflow:hidden：内容超出容器时裁剪，防止整页滚动 */
+.layout { display: flex; height: 100vh; overflow: hidden; }
+
+/* ---------- 侧边导航栏 ---------- */
+.sidebar {
+  width: 220px;                           /* 固定宽度 */
+  background: #001529;                    /* 深蓝底 */
+  color: #c9d1d9;
+  flex-shrink: 0;                         /* flex 子项不被压缩，保持 220px */
+  transition: width .25s ease;            /* 过渡：width 变化时 0.25s 平滑过渡 */
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;                 /* 主轴改为纵向，logo 在上、菜单在下 */
+}
+/* 类选择器叠加：同时含 .sidebar 和 .collapsed 才生效 */
+.sidebar.collapsed { width: 64px; }            /* 折叠状态宽度变小 */
+.sidebar .logo {
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: #fff;
+  font-size: 18px;
+  font-weight: 700;
+  background: #00284d;
+  white-space: nowrap;
+}
+.sidebar .logo .logo-icon { font-size: 22px; }
+.sidebar.collapsed .logo .logo-text { display: none; }
+
+/* 菜单区域 */
+.menu { flex: 1; overflow-y: auto; padding: 8px 0; }
+.menu-item { user-select: none; }
+.menu-item > .menu-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 20px;
+  height: 46px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background .2s;
+}
+.menu-item > .menu-title:hover { background: #003a6c; color: #fff; }
+.menu-item .menu-icon { width: 18px; text-align: center; }
+.menu-item .menu-arrow { margin-left: auto; transition: transform .25s; font-size: 12px; }
+.menu-item.open .menu-arrow { transform: rotate(90deg); }
+.sidebar.collapsed .menu-title .menu-text,
+.sidebar.collapsed .menu-arrow,
+.sidebar.collapsed .submenu { display: none; }  /* 折叠时隐藏文字与子菜单 */
+
+/* 子菜单 */
+/* max-height 折叠技巧：未展开 max-height:0 隐藏；展开给一个足够大的值 */
+/* 配合 transition 实现无 height:auto 的"高度过渡"动画 */
+.submenu { background: #000c18; overflow: hidden; max-height: 0; transition: max-height .25s ease; }
+.menu-item.open .submenu { max-height: 320px; }
+.submenu li a {
+  display: block;
+  padding: 0 20px 0 48px;
+  height: 42px;
+  line-height: 42px;
+  color: #9ba4ad;
+  white-space: nowrap;
+  transition: background .2s, color .2s;
+}
+.submenu li a:hover { background: #003a6c; color: #fff; }
+/* 菜单高亮（当前页） */
+.menu-title.active { background: #003a6c; color: #fff; }
+.submenu li a.active { background: #1677ff; color: #fff; }
+
+/* ---------- 主区域 ---------- */
+.main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+
+/* 顶部头部 */
+.header {
+  height: 60px;
+  background: #fff;
+  box-shadow: 0 1px 4px rgba(0,21,41,.08);
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+  flex-shrink: 0;
+}
+.header .collapse-btn {
+  font-size: 20px;
+  cursor: pointer;
+  margin-right: 16px;
+  color: #5a5e66;
+}
+.header .breadcrumb { color: #5a5e66; }
+.header .account { margin-left: auto; display: flex; align-items: center; gap: 8px; color: #5a5e66; }
+.header .account .avatar {
+  width: 32px; height: 32px; border-radius: 50%;
+  background: #1677ff; color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px; font-weight: 700;
+}
+
+/* 内容区 */
+.content { flex: 1; overflow: auto; padding: 16px; }
+
+/* ---------- 通用按钮 ---------- */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  height: 32px; padding: 0 16px; border: 1px solid #d9d9d9;
+  background: #fff; color: #303133; border-radius: 4px;
+  cursor: pointer; transition: all .2s; white-space: nowrap;
+}
+.btn:hover { color: #1677ff; border-color: #1677ff; }
+.btn-primary { background: #1677ff; border-color: #1677ff; color: #fff; }
+.btn-primary:hover { background: #4096ff; border-color: #4096ff; color: #fff; }
+.btn-danger { color: #ff4d4f; border-color: #ff4d4f; }
+.btn-danger:hover { background: #ff4d4f; color: #fff; }
+.btn-default { background: #f5f5f5; }
+.btn-sm { height: 26px; padding: 0 10px; font-size: 12px; }
+.btn-link { border: none; background: transparent; color: #1677ff; padding: 0 4px; height: auto; }
+.btn-link.danger { color: #ff4d4f; }
+.btn[disabled] { opacity: .5; cursor: not-allowed; }
+
+/* ---------- 通用表单 ---------- */
+.form-row { margin-bottom: 18px; }
+.form-row .label { display: block; margin-bottom: 6px; color: #5a5e66; }
+.form-row .label .required { color: #ff4d4f; margin-right: 4px; }
+.input, .select {
+  width: 100%; height: 34px; padding: 0 11px;
+  border: 1px solid #d9d9d9; border-radius: 4px; background: #fff;
+  transition: border-color .2s;
+}
+.input:focus, .select:focus { border-color: #1677ff; box-shadow: 0 0 0 2px rgba(22,119,255,.12); }
+.input[disabled], .select[disabled] { background: #f5f5f5; color: #a8abb2; cursor: not-allowed; }
+.textarea { width: 100%; min-height: 80px; padding: 8px 11px; border: 1px solid #d9d9d9; border-radius: 4px; resize: vertical; }
+.error-tip { color: #ff4d4f; font-size: 12px; margin-top: 4px; min-height: 16px; }
+
+/* ---------- 通用卡片 ---------- */
+.card {
+  background: #fff; border-radius: 6px;
+  box-shadow: 0 1px 2px rgba(0,0,0,.06);
+  margin-bottom: 16px;
+}
+.card .card-header {
+  padding: 14px 20px; border-bottom: 1px solid #f0f0f0;
+  font-weight: 600; display: flex; align-items: center; justify-content: space-between;
+}
+.card .card-body { padding: 20px; }
+
+/* ---------- 通用弹窗（div 模拟遮罩） ---------- */
+/* position:fixed：相对浏览器视口定位，滚动时遮罩不动 */
+/* inset:0：等价 top/right/bottom/left:0，铺满全屏 */
+/* rgba：rgba(0,0,0,.45) 半透明黑色遮罩，0.45 为 alpha 透明度 */
+/* z-index：数值越大越在上层，1000 确保盖住所有内容 */
+/* display:none/flex 切换：none 不占位隐藏，show 时改 flex 显示 */
+.modal-mask {
+  position: fixed; inset: 0; background: rgba(0,0,0,.45);
+  display: none; align-items: center; justify-content: center; z-index: 1000;
+}
+.modal-mask.show { display: flex; }
+.modal {
+  background: #fff; border-radius: 8px; width: 640px; max-width: 92vw;
+  max-height: 88vh; display: flex; flex-direction: column; overflow: hidden;
+  animation: modalIn .2s ease;             /* 动画：引用下方 @keyframes */
+}
+/* @keyframes 关键帧动画：定义从 from 到 to 的状态变化 */
+/* transform:translateY 位移；opacity 透明度 0→1 实现淡入上移 */
+@keyframes modalIn { from { transform: translateY(-12px); opacity: 0; } to { transform: none; opacity: 1; } }
+.modal .modal-header {
+  padding: 16px 20px; border-bottom: 1px solid #f0f0f0;
+  display: flex; align-items: center; justify-content: space-between;
+  font-weight: 600; font-size: 16px;
+}
+.modal .modal-header .close-btn { cursor: pointer; font-size: 20px; color: #9ba4ad; line-height: 1; }
+.modal .modal-body { padding: 20px; overflow-y: auto; }
+.modal .modal-footer {
+  padding: 12px 20px; border-top: 1px solid #f0f0f0;
+  display: flex; justify-content: flex-end; gap: 10px;
+}
+
+/* ---------- 通用表格 ---------- */
+/* border-collapse:collapse：合并相邻单元格边框，避免双线 */
+.table { width: 100%; border-collapse: collapse; background: #fff; }
+.table th, .table td { padding: 12px 12px; border-bottom: 1px solid #f0f0f0; text-align: left; }
+.table thead th { background: #fafafa; color: #5a5e66; font-weight: 600; }
+/* 伪类 :hover：鼠标悬停时背景变色，提升可读性 */
+.table tbody tr:hover { background: #f5f7fa; }
+.table .col-center { text-align: center; }
+/* 属性选择器 input[type=checkbox]：按属性精准定位复选框 */
+.table .col-center input[type=checkbox] { cursor: pointer; }
+
+/* 状态标签 */
+.tag { display: inline-block; padding: 2px 10px; border-radius: 10px; font-size: 12px; line-height: 18px; }
+.tag-success { background: #f6ffed; color: #389e0d; border: 1px solid #b7eb8f; }
+.tag-danger  { background: #fff1f0; color: #cf1322; border: 1px solid #ffa39e; }
+
+/* 空数据 */
+.empty { text-align: center; color: #bbb; padding: 32px 0; }
+
+/* 滚动条美化 */
+/* 伪元素 ::-webkit-scrollbar：WebKit 内核浏览器自定义滚动条样式 */
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-thumb { background: #c1c1c1; border-radius: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
