@@ -1,0 +1,68 @@
+/* ========== 工作台首页样式 index.css ==========
+   涉及知识：
+     · display:grid + grid-template-columns:repeat(4,1fr) 二维网格 4 列等宽
+     · 1fr 弹性单位：把剩余空间等分；repeat() 重复列定义
+     · @media 媒体查询：不同屏宽切换列数，实现响应式
+     · transform:translateY hover 上移；box-shadow 阴影增强层次
+================================================== */
+
+/* 统计卡片网格：自适应 4 列 */
+/* grid 网格：display:grid 二维布局 */
+/* repeat(4,1fr)：重复 4 列，1fr 表示每列占剩余空间的等分 */
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;                              /* gap 同时设行列间距 */
+  margin-bottom: 16px;
+}
+/* @media 媒体查询：屏宽 ≤1100px 改 2 列；≤640px 改 1 列，实现响应式 */
+@media (max-width: 1100px) { .stat-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 640px)  { .stat-grid { grid-template-columns: 1fr; } }
+
+/* 单个统计卡片 */
+.stat-card {
+  background: #fff;
+  border-radius: 6px;
+  box-shadow: 0 1px 2px rgba(0,0,0,.06);  /* box-shadow:X偏移 Y偏移 模糊 颜色 */
+  padding: 20px;
+  display: flex;                          /* 图标与文字横向排列 */
+  align-items: center;
+  gap: 16px;
+  transition: box-shadow .2s, transform .2s;  /* 阴影/位移过渡 */
+}
+/* :hover 鼠标悬停时阴影加深、向上位移 2px，增强立体感 */
+.stat-card:hover { box-shadow: 0 4px 12px rgba(0,0,0,.1); transform: translateY(-2px); }
+.stat-icon {
+  width: 52px; height: 52px; border-radius: 10px;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;  /* flex-shrink:0 不被压缩 */
+}
+.stat-info { flex: 1; min-width: 0; }     /* min-width:0 防止内容撑破布局 */
+.stat-label { color: #8c8c8c; font-size: 13px; margin-bottom: 6px; }
+.stat-value { font-size: 26px; font-weight: 700; color: #303133; line-height: 1.2; }
+.stat-sub { color: #bfbfbf; font-size: 12px; margin-top: 4px; }
+
+/* 快捷入口 */
+.quick-entry { display: flex; gap: 24px; flex-wrap: wrap; }   /* flex-wrap:wrap 自动换行 */
+.entry-item {
+  display: flex; flex-direction: column; align-items: center; gap: 8px;
+  width: 100px; padding: 14px 0; border-radius: 6px;
+  transition: background .2s; color: #5a5e66;
+}
+.entry-item:hover { background: #f5f7fa; color: #1677ff; }
+.entry-icon {
+  width: 50px; height: 50px; border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+}
+
+/* 卡片副标题 */
+.card-header .card-sub { font-size: 12px; color: #bfbfbf; font-weight: 400; }
+
+/* 扩展占位容器 */
+.placeholder-box {
+  border: 1px dashed #d9d9d9;             /* dashed 虚线边框 */
+  border-radius: 6px;
+  color: #bbb;
+  text-align: center;
+  padding: 48px 0;
+  background: #fafafa;
+}

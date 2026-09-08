@@ -1,0 +1,46 @@
+/* ========== 月卡管理列表页样式 monthCard.css ==========
+   涉及知识：
+     · flex-wrap:wrap 让筛选区在窄屏自动换行
+     · margin-left:auto 在 flex 中把元素推到最右
+     · overflow-x:auto 表格横向滚动
+     · white-space:nowrap 不换行，保证表格单元格紧凑
+     · grid 1fr 1fr 弹窗两列表单
+================================================== */
+
+/* 筛选区 */
+.filter-bar { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 16px 24px; }
+.filter-item { display: flex; flex-direction: column; gap: 6px; }
+.filter-item label { color: #5a5e66; font-size: 13px; }
+.filter-item .input, .filter-item .select { width: 200px; }
+/* margin-left:auto 在 flex 容器里把按钮组推到最右端 */
+.filter-actions { display: flex; gap: 10px; margin-left: auto; }
+
+/* 工具栏 */
+.card-toolbar { display: flex; align-items: center; justify-content: space-between; }
+.toolbar-btns { display: flex; gap: 10px; }
+
+/* 表格容器：小屏横向滚动 */
+/* overflow-x:auto：内容超宽时出现横向滚动条 */
+.table-wrap { overflow-x: auto; }
+/* white-space:nowrap：单元格内容不换行，保证表格紧凑 */
+.table th, .table td { white-space: nowrap; }
+.table td .btn-link { margin-right: 6px; }
+
+/* 分页 */
+.pagination {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 20px; border-top: 1px solid #f0f0f0;
+}
+.page-info { color: #5a5e66; }
+.page-size { width: 70px; height: 28px; margin: 0 6px; }
+.page-btns { display: flex; align-items: center; gap: 10px; }
+.page-num { color: #5a5e66; min-width: 60px; text-align: center; }
+
+/* 弹窗内表单网格：两列 */
+/* grid-template-columns:1fr 1fr 两列等宽；gap:0 24px 行间距0、列间距24px */
+.modal-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 0 24px;
+}
+.modal-grid .form-row { grid-column: span 1; }   /* 每个表单项占 1 列 */
+/* 响应式：窄屏弹窗表单改一列，避免挤压 */
+@media (max-width: 640px) { .modal-grid { grid-template-columns: 1fr; } }
